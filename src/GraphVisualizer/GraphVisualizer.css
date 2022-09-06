@@ -1,0 +1,101 @@
+textarea {
+    resize: none;
+    vertical-align: top;
+    border-radius: 4px;
+}
+
+.left {
+    position: absolute;
+    width: 40%;
+    height: 80%;
+}
+
+.right {
+    position: absolute;
+    left: 500px;
+    /*top: 125px;*/
+    width: 540px;
+    height: 540px;
+    border: 1px solid #000000;
+    border-radius: 9px;
+}
+
+.topbar {
+    height: 10%;
+    padding: 1px;
+    background: #3492eb;
+    color: whitesmoke;
+}
+
+.content {
+    position: relative;
+    left: 50%;
+    margin-left: -520px;
+    top: 50px;
+}
+
+.buttons {
+    padding: 12px 27px;
+    font-size: medium;
+    background: #c9dbed;
+    border-radius: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+.smallButtons {
+    padding: 2px 3px;
+    font-size: 13px;
+    background: #c9dbed;
+    border-radius: 5px;
+    margin-right: 1px;
+    margin-bottom: 12px;
+}
+
+.active {
+    background: #1358b4;
+    color: whitesmoke
+}
+
+.buttonsLeft {
+    position: absolute;
+    text-align: left;
+    width: 420px;
+}
+.bonusInfo {
+    position: absolute;
+    text-align: left;
+    margin-top: 120px;
+    width: 420px;
+}
+@media (max-width: 1140px) {
+
+.content {
+    position: relative;
+    left: auto;
+    margin-left: 50px;
+    top: 50px;
+}
+
+}
+
+@media (max-width: 900px) {
+
+.right {
+    position: absolute;
+    left:-10px;
+    top: 570px;
+    width: 440px;
+    height: 440px;
+    border: 1px solid #000000;
+    border-radius: 9px;
+}
+    
+.content {
+    position: relative;
+    left: 50%;
+    margin-left: -215px;
+    top: 50px;
+}
+
+}
