@@ -54,17 +54,15 @@ export default class GraphVisualizer extends React.Component {
             drawType: 0,
             startNode: 5, endNode: 5,
             directed: false,
-            //verticesString: "1 2\n1 3\n1 4\n4 5",
         };
     }
     setNodes(val) {
         this.setState({ n: val.target.value });
     }
-    setVertices(val) {
-        //this.setState({verticesString: val.target.value.replace('r', '')})
-        let vertices = val.target.value.split("\n");
+    setEdges(val) {
+        let Edges = val.target.value.split("\n");
         let arr = new Array();
-        vertices.forEach(element => {
+        Edges.forEach(element => {
             for(let i = 0; i < element.length; i ++) {
                 if(!(element[i] == ' ' || (element[i] >= '0' && element[i] <= '9')))
                     return
@@ -76,7 +74,6 @@ export default class GraphVisualizer extends React.Component {
             vertex[2] = (nodes.length == 2 || nodes[2] == undefined || nodes[2] == '' || nodes[2] == NaN) ? '' : nodes[2];
             arr.push(vertex)
         });
-        //console.warn(arr);
         this.setState({list: arr});
     }
     makeUndirected() {
@@ -139,11 +136,12 @@ export default class GraphVisualizer extends React.Component {
                                              placeholder={"Enter node count (max. 99)"} id = "nodeInput"/>
                         </div><br/>
                         <div align="left">
-                            Vertices:<br/> <textarea type="text" rows="15" cols="50" 
-                                    placeholder={"Enter vertices in following format: \nNode1 Node2 (Weight)"}
+                            {this.state.directed == false ? "Edges:" : "Arcs:"}<br/> <textarea type="text" rows="15" cols="50" 
+                                    placeholder={this.state.directed == false ? "Enter edges in following format: \nNode1 Node2 (Weight)" :
+                                                                                "Enter arcs in following format: \nNode1 Node2 (Weight)"}
                                     defaultValue = {"1 2\n1 3\n1 4\n4 5"}
-                                    onChange={(val) => this.setVertices(val)}
-                                    id="verticesInput"
+                                    onChange={(val) => this.setEdges(val)}
+                                    id="EdgesInput"
                                     />
                         </div><br/>
 
@@ -175,14 +173,3 @@ export default class GraphVisualizer extends React.Component {
         );
     }
 }
-/*
-var ta = document.getElementById("verticesInput")
-ta.addEventListener(
-    'keypress',
-    function (key) {
-        if(key.keyCode == 60) {
-            alert('no <')
-            key.preventDefault()
-        }
-    }
-)*/

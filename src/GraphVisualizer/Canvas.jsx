@@ -18,7 +18,6 @@ function getPointAtDistance(x1, y1, x2, y2, sz) {
         x = x2 - (r / (Math.sqrt(m * m + 1))) * (x2 > x1 ? 1 : -1)
         y = m * x + n
     }
-    //console.warn([x, y])
     return [x, y]
 }
 function getRightTrianglePoint(pb, p1, r) {
@@ -36,7 +35,6 @@ function getRightTrianglePoint(pb, p1, r) {
         x = pb[0] + (r / (Math.sqrt(mr * mr + 1)))
         y = mr * x + nr
     }
-    //console.warn([x, y])
     return [x, y]
 }
 function getWeightPos(x1, y1, x2, y2, mid, m, r) {
@@ -53,13 +51,11 @@ function getWeightPos(x1, y1, x2, y2, mid, m, r) {
         x = mid[0] + (r / (Math.sqrt(mr * mr + 1)))
         y = mr * x + nr
     }
-    //console.warn([x, y])
     return [x, y]
 }
 function getPointAtDistanceBezier(p0, p1, p2, r) {
     let dist = Math.sqrt((p2[1] - p0[1]) * (p2[1] - p0[1]) + (p2[0] - p0[0]) * (p2[0] - p0[0]))
     let t = (dist - r) / dist
-    //console.warn("t: " + t + "  " + (((1 - t) * (1 - t) * p0[0]) + 2 * (1 - t) * 5 * p1[0] + t * t * p2[0]))
     return [(((1 - t) * (1 - t) * p0[0]) + 2 * (1 - t) * t * p1[0] + t * t * p2[0]), 
             (((1 - t) * (1 - t) * p0[1]) + 2 * (1 - t) * t * p1[1] + t * t * p2[1])]
 }
@@ -79,7 +75,6 @@ function getLeftTrianglePoint(pb, p1, r) {
         x = pb[0] - (r / (Math.sqrt(mr * mr + 1)))
         y = mr * x + nr
     }
-    //console.warn([x, y])
     return [x, y]
 }
 
@@ -88,7 +83,7 @@ const Canvas = props => {
     const { data } = props
     
     var unit
-    var accentVertices, accentNodes
+    var accentEdges, accentNodes
 
     const drawCircle = (ctx, x, y, r, col) => {
         ctx.fillStyle = col
@@ -134,7 +129,6 @@ const Canvas = props => {
     }
 
     const drawVertex = (ctx, x1, y1, x2, y2, size, col, directed, weight) => {
-        //console.warn("drawVertex")
         ctx.strokeStyle = col
         ctx.beginPath()
         let m = (x2 == x1) ? 0 : ((y2 - y1) / (x2 - x1))
@@ -153,9 +147,6 @@ const Canvas = props => {
             bezier = true
             highDistance = true
         }
-        //console.warn("bezier " + bezier)
-        //console.warn(dist + " " + (2 * Math.sqrt(2) * unit) + " " + 4 * Math.sqrt(2) * unit + "\n" + 
-        //console.warn("divides? " + divides(dist, 2 * Math.sqrt(2) * unit).toString() + " " + (dist - 4 * Math.sqrt(2) * unit).toString())
         if(bezier == true) {
             let midx = (x1 + x2) / 2, midy = (y1 + y2) / 2
             let totalManhattan  = Math.abs(y2 - y1) + Math.abs(x2 - x1)
@@ -180,8 +171,6 @@ const Canvas = props => {
             mpy = midy + degree * anglex
             middlex = (((x1 + x2) / 2) + mpx) / 2
             middley = (((y1 + y2) / 2) + mpy) / 2
-            // punctul din mijloc al bezier curve-ului e la jumatatea dintre mijlocul dintre cele doua noduri si control point ul
-            // din mijloc
         } else {
             ctx.lineTo(x2, y2)
             middlex = (x1 + x2) / 2
@@ -245,7 +234,7 @@ const Canvas = props => {
 
         /**
          * 1. Set node positions
-         * 2. Draw vertices
+         * 2. Draw Edges
          * 3. Draw nodes
          */
 
@@ -262,7 +251,6 @@ const Canvas = props => {
         else
             nodeSize = 8.5
         
-        //console.warn("screenWidth: " + screenWidth)
         var canvasDiv = document.getElementById('canvasDiv')
         let canvasWidth = canvasDiv.clientWidth
         if(window.innerWidth > 1140) {
@@ -278,10 +266,9 @@ const Canvas = props => {
             canvasWidth = 440
             canvasDiv.setAttribute("style", "width: 440px; height: 440px;")
         }
-        //console.warn("divWidth: " + canvasWidth)
         nodeSize *= canvasWidth / 540
         let midx = canvasWidth / 2, midy = canvasWidth / 2
-        //console.warn(nodeSize)
+        
         let nodePos = new Array(data.n+1)
         unit = nodeSize
         
@@ -328,16 +315,15 @@ const Canvas = props => {
         if(data.drawType == 1) {
             defColor = '#CCCCCC';
             accentColor = '#bf0d00';
-            [accentVertices, accentNodes] = getMST()
-            //console.warn(accentVertices)
+            [accentEdges, accentNodes] = getMST()
         } else if(data.drawType == 2) {
             defColor = '#121212';
             accentColor = '#32a852';
-            [accentVertices, accentNodes] = bellmanford()
+            [accentEdges, accentNodes] = bellmanford()
         } else if(data.drawType == 3) {
             defColor = '#121212';
             accentColor = '#4287f5';
-            [accentVertices, accentNodes] = hamiltonianCircuit()
+            [accentEdges, accentNodes] = hamiltonianCircuit()
         }
 
         data.list.forEach(vert => {
@@ -347,8 +333,8 @@ const Canvas = props => {
         });
         
         let errorMessage = ''
-        if(data.drawType != 0 && data.n != '' && accentVertices.length > 0) {
-            accentVertices.every(vert => {
+        if(data.drawType != 0 && data.n != '' && accentEdges.length > 0) {
+            accentEdges.every(vert => {
                 if(vert[0] == -1) {
                     errorMessage = "Found negative cycle!"
                     return false
@@ -430,7 +416,6 @@ const Canvas = props => {
             mstNodes[i] = 0
         }
 
-        //console.warn("tt1: " + tt)
         list.sort(cmp)
 
         for(let i = 0; i < m; i ++) {
@@ -448,26 +433,21 @@ const Canvas = props => {
                 mstNodes[y] = 1
             }
         }
-        //console.warn("tt2: " + tt)
-        //console.warn(mstList)
         return [mstList, mstNodes]
     }
     // Minimum Spanning Tree>
 
     // <Shortest Path
     function bellmanford() {
-        //let start = data.startNode, end = data.endNode
-        //linkedList, priorityQueue
-        var q = new Queue(data.n) // Sau mai bine Bellman Ford cu Queue
+        var q = new Queue(data.n)
         var v = new Array(data.n + 1)
         var done = new Array(data.n + 1), is = new Array(data.n + 1), best = new Array(data.n + 1),
                     last = new Array(data.n + 1), lastCost = new Array(data.n + 1)
 
-        var pathVertices = new Array(), pathNodes = new Array(data.n + 1)
+        var pathEdges = new Array(), pathNodes = new Array(data.n + 1)
 
         if(data.startNode == '' || data.endNode == '' || data.startNode > data.n || data.endNode > data.n) {
-            //pathVertices.push([-4, -4, -4])
-            return [pathVertices, pathNodes]
+            return [pathEdges, pathNodes]
         }
 
         for(let i = 1; i <= data.n; i ++) {
@@ -487,40 +467,27 @@ const Canvas = props => {
             }
         })
 
-        /*
-        for(let i = 1; i <= data.n; i ++) {
-            console.warn("for " + i)
-            for(let p = v[i].head; p != null; p = p.next) {
-                console.warn(p)
-            }
-            console.warn("that was for " + i)
-        }
-        */
-        
         q.push(data.startNode)
         best[data.startNode] = 0
         done[data.startNode] = 1
         is[data.startNode] = 1
         while(!q.empty()) {
             let x = q.front()
-            //console.warn("now at " + x)
+            
             is[x] = 0
             q.pop()
             for(let p = v[x].head; p != null; p = p.next) {
-                //console.warn((best[x] + p.data[1]) + "   " + (best[p.data[0]]) + " done: " + done[x])
+                
                 if(best[x] + p.data[1] < best[p.data[0]]) {
                     if(done[x] >= data.n) {
                         // negative cycle
-                        //console.warn("negative cycle!")
-                        pathVertices.push([-1, -1, -1])
-                        return [pathVertices, pathNodes]
+                        pathEdges.push([-1, -1, -1])
+                        return [pathEdges, pathNodes]
                     }
                     best[p.data[0]] = best[x] + p.data[1]
-                    //console.warn("update: " + p.data[0] + " " + x)
                     last[p.data[0]] = x
                     lastCost[p.data[0]] = p.data[1]
                     if(is[p.data[0]] == 0) {
-                        //console.warn("push: " + p.data[0])
                         is[p.data[0]] = 1
                         done[p.data[0]] ++
                         q.push(p.data[0])
@@ -531,27 +498,27 @@ const Canvas = props => {
         let to = data.endNode
         let from = last[to]
         if(from == -1) {
-            pathVertices.push([-4, -4, -4])
-            return [pathVertices, pathNodes]
+            pathEdges.push([-4, -4, -4])
+            return [pathEdges, pathNodes]
         }
         pathNodes[to] = 1
         while(from != -1) {
             let vert = new Array(3)
             vert = [from, to, lastCost[to]]
-            pathVertices.push(vert)
+            pathEdges.push(vert)
             pathNodes[from] = 1
 
             from = last[from]
             to = last[to]
         }
         
-        return [pathVertices, pathNodes]   
+        return [pathEdges, pathNodes]   
     }
     // Shortest Path>
 
     // <Hamiltonian Circuit
     function hamiltonianCircuit() {
-        var pathVertices = new Array(data.n), pathNodes = new Array(data.n + 1)
+        var pathEdges = new Array(data.n), pathNodes = new Array(data.n + 1)
         var v = new Array(data.n + 1)
         var done = new Array(data.n + 1)
         var k = -1, foundAns = false
@@ -559,7 +526,6 @@ const Canvas = props => {
             v[i] = new Array()
             pathNodes[i] = 0
             done[i] = 0
-            //gr[i] = 0;
         }
         data.list.forEach(vert => {
             if(goodVert(vert)) {
@@ -569,49 +535,39 @@ const Canvas = props => {
             }
         })
         function dfs(x) {
-            //console.warn("dfs: " + x)
             if(k == data.n - 2) {
-                //console.warn("final")
                 for(let i = 0; i < v[x].length; i ++) {
                     if(v[x][i][0] == 1) {
                         foundAns = true
-                        pathVertices[++k] = [x, v[x][i][0], v[x][i][1]]
+                        pathEdges[++k] = [x, v[x][i][0], v[x][i][1]]
                         break;
                     }
                 }
                 return
             }
             for(let i = 0; i < v[x].length && foundAns == false; i ++) {
-                //console.warn("v[x][i]: " + v[x][i])
                 if(done[v[x][i][0]] == 0) {
                     done[v[x][i][0]] = 1
-                    pathVertices[++k] = [x, v[x][i][0], v[x][i][1]]
+                    pathEdges[++k] = [x, v[x][i][0], v[x][i][1]]
                     dfs(v[x][i][0])
                     done[v[x][i][0]] = 0
                     k --
                 }
             }
         }
-        //console.log("start: ")
+        
         done[1] = 1
         dfs(1)
-        /*
-        for(let i = 1; i <= data.n; i ++) {
-            if(gr[i] % 2 != 0) {
-                pathVertices.push([-2, -2, -2])
-                return [pathVertices, pathNodes]
-            }
-        }
-        */
+
         if(foundAns == true) {
             for(let j = 1; j <= data.n; j ++) {
                 pathNodes[j] = 1
             }
-            return [pathVertices, pathNodes]
+            return [pathEdges, pathNodes]
         }
         else {
-            pathVertices[0] = [-2, -2, -2]
-            return [pathVertices, pathNodes]
+            pathEdges[0] = [-2, -2, -2]
+            return [pathEdges, pathNodes]
         }
     }
     // Hamiltonian Circuit>
