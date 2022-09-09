@@ -7,7 +7,7 @@ A visualization tool for graph algorithms. You can use it here: [https://sasecai
 
 The tool is able to draw directed or undirected graphs.
 
-Enter vertices information in the following format:
+Enter edge/arc information in the following format:
 `Node 1` `Node 2` `(Weight)`
 <br>All values should be integers. Weight can be negative.
 
