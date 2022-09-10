@@ -446,7 +446,7 @@ const Canvas = props => {
 
         var pathEdges = new Array(), pathNodes = new Array(data.n + 1)
 
-        if(data.startNode == '' || data.endNode == '' || data.startNode > data.n || data.endNode > data.n) {
+        if(data.startNode == '' || data.endNode == '' || parseInt(data.startNode) > parseInt(data.n) || parseInt(data.endNode) > parseInt(data.n)) {
             return [pathEdges, pathNodes]
         }
 

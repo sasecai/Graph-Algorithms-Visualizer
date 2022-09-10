@@ -6,7 +6,7 @@ textarea {
 
 .left {
     position: absolute;
-    width: 40%;
+    width: 424.4px;
     height: 80%;
 }
 
@@ -49,6 +49,10 @@ textarea {
     border-radius: 5px;
     margin-right: 1px;
     margin-bottom: 12px;
+}
+.generateRandomGraph {
+    position: absolute;
+    right: 0px;
 }
 
 .active {

@@ -2,6 +2,26 @@ import React from "react";
 import './GraphVisualizer.css'
 import Canvas from './Canvas'
 
+function ifSafari() {
+    console.warn(navigator.userAgent)
+    let ua = navigator.userAgent
+    if(ua.includes("Safari/") && !ua.includes("Chrome/") && !ua.includes("Chromium/"))
+        return true
+    return false
+}
+
+function RandomRange(low, high) {
+    let x = Math.floor(Math.random() * 10000)
+    x = x % (high - low + 1)
+    return x + low
+}
+function CoinFlip() {
+    let x = Math.random()
+    if(x < 0.5)
+        return true
+    else return false
+}
+
 function PathSelect(props) {
     if(props.drawType == 2)
     return (
@@ -57,10 +77,14 @@ export default class GraphVisualizer extends React.Component {
         };
     }
     setNodes(val) {
+        for(let i = 0; i < val.target.value.length; i ++) {
+            if(!(val.target.value[i] >= '0' && val.target.value[i] <= '9'))
+                return
+        }
         this.setState({ n: val.target.value });
     }
     setEdges(val) {
-        let Edges = val.target.value.split("\n");
+        let Edges = val.split("\n");
         let arr = new Array();
         Edges.forEach(element => {
             for(let i = 0; i < element.length; i ++) {
@@ -96,7 +120,6 @@ export default class GraphVisualizer extends React.Component {
         this.setState({drawType: 0})
         this.deactivateAllButtons()
         document.getElementById('btn-draw').classList.add('active')
-        //$('#btn-mst').removeClass('active')
     }
     drawMst() {
         this.setState({drawType: 1})
@@ -119,6 +142,45 @@ export default class GraphVisualizer extends React.Component {
     setEndNode(val) {
         this.setState({endNode: val.target.value})
     }
+    generateRandomGraph() {
+        let n, m, x, y, z, str = ""
+        let used
+
+        if(CoinFlip()) {
+            n = 9
+            m = RandomRange(4, 9)
+        } else {
+            n = 25
+            m = RandomRange(8, 15)
+        }
+        used = new Array(n + 1)
+        for(let i = 1; i <= n; i ++) {
+            used[i] = new Array(n + 1)
+            for(let j = 1; j <= n; j ++)
+                used[i][j] = 0
+        }
+        for(let i = 0; i < m; i ++) {
+            x = RandomRange(1, n)
+            y = RandomRange(1, n-1)
+            if(y >= x)
+                y ++
+            z = RandomRange(0, 20)
+            if(used[x][y] == 0 && used[y][x] == 0) {
+                used[x][y] = 1
+                str = str + x + " " + y + " " + z + "\n"
+                document.getElementById("EdgesInput").value = str
+                this.setEdges(document.getElementById("EdgesInput").value)
+            }// else m ++
+        }
+
+        if(CoinFlip())
+            this.makeDirected()
+        else this.makeUndirected()
+        
+        
+        document.getElementById("nodeInput").value = n
+        this.setState({n: n})
+    }
     render() {
         return (
             <>
@@ -130,17 +192,18 @@ export default class GraphVisualizer extends React.Component {
                         <div align="left">
                             <button class="smallButtons active" type="button" id='btn-undirected' onClick={() => this.makeUndirected()}>Undirected</button>
                             <button class="smallButtons" type="button" id='btn-directed' onClick={() => this.makeDirected()}>Directed</button>
+                            <button class="smallButtons generateRandomGraph" type="button" onClick={() => this.generateRandomGraph()}>Generate Random Graph</button>
                         </div>
                         <div align="left">
-                            Node Count:<br/> <textarea type="text" maxLength="2" rows="1" cols="50" defaultValue={this.state.n} onChange={(val) => this.setNodes(val)}
+                            Node Count:<br/> <textarea type="text" maxLength="2" rows="1" cols={ifSafari() ? "57" : "50"} defaultValue={this.state.n} onChange={(val) => this.setNodes(val)}
                                              placeholder={"Enter node count (max. 99)"} id = "nodeInput"/>
                         </div><br/>
                         <div align="left">
-                            {this.state.directed == false ? "Edges:" : "Arcs:"}<br/> <textarea type="text" rows="15" cols="50" 
+                            {this.state.directed == false ? "Edges:" : "Arcs:"}<br/> <textarea type="text" rows="15" cols={ifSafari() ? "57" : "50"}
                                     placeholder={this.state.directed == false ? "Enter edges in following format: \nNode1 Node2 (Weight)" :
                                                                                 "Enter arcs in following format: \nNode1 Node2 (Weight)"}
                                     defaultValue = {"1 2\n1 3\n1 4\n4 5"}
-                                    onChange={(val) => this.setEdges(val)}
+                                    onChange={(val) => this.setEdges(val.target.value)}
                                     id="EdgesInput"
                                     />
                         </div><br/>
