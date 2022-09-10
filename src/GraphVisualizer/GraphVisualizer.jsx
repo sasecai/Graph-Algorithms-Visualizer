@@ -3,7 +3,6 @@ import './GraphVisualizer.css'
 import Canvas from './Canvas'
 
 function ifSafari() {
-    console.warn(navigator.userAgent)
     let ua = navigator.userAgent
     if(ua.includes("Safari/") && !ua.includes("Chrome/") && !ua.includes("Chromium/"))
         return true
