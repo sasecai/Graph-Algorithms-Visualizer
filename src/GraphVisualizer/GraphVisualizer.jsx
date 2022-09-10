@@ -136,9 +136,17 @@ export default class GraphVisualizer extends React.Component {
         document.getElementById('btn-hamilton').classList.add('active')
     }
     setStartNode(val) {
+        for(let i = 0; i < val.target.value.length; i ++) {
+            if(!(val.target.value[i] >= '0' && val.target.value[i] <= '9'))
+                return
+        }
         this.setState({startNode: val.target.value})
     }
     setEndNode(val) {
+        for(let i = 0; i < val.target.value.length; i ++) {
+            if(!(val.target.value[i] >= '0' && val.target.value[i] <= '9'))
+                return
+        }
         this.setState({endNode: val.target.value})
     }
     generateRandomGraph() {
