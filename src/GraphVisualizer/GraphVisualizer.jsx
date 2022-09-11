@@ -2,11 +2,17 @@ import React from "react";
 import './GraphVisualizer.css'
 import Canvas from './Canvas'
 
-function ifSafari() {
+function browserBasedLength() {
     let ua = navigator.userAgent
+    console.warn(ua)
     if(ua.includes("Safari/") && !ua.includes("Chrome/") && !ua.includes("Chromium/"))
-        return true
-    return false
+        return "57"
+    if(ua.includes("Firefox/") && !ua.includes("Seamonkey/")) {
+        console.warn("firefox")
+        return "53"
+    }
+    console.warn("default")
+    return "50"
 }
 
 function RandomRange(low, high) {
@@ -202,11 +208,11 @@ export default class GraphVisualizer extends React.Component {
                             <button class="smallButtons generateRandomGraph" type="button" onClick={() => this.generateRandomGraph()}>Generate Random Graph</button>
                         </div>
                         <div align="left">
-                            Node Count:<br/> <textarea type="text" maxLength="2" rows="1" cols={ifSafari() ? "57" : "50"} defaultValue={this.state.n} onChange={(val) => this.setNodes(val)}
+                            Node Count:<br/> <textarea type="text" maxLength="2" rows="1" cols={browserBasedLength()} defaultValue={this.state.n} onChange={(val) => this.setNodes(val)}
                                              placeholder={"Enter node count (max. 99)"} id = "nodeInput"/>
                         </div><br/>
                         <div align="left">
-                            {this.state.directed == false ? "Edges:" : "Arcs:"}<br/> <textarea type="text" rows="15" cols={ifSafari() ? "57" : "50"}
+                            {this.state.directed == false ? "Edges:" : "Arcs:"}<br/> <textarea type="text" rows="15" cols={browserBasedLength()}
                                     placeholder={this.state.directed == false ? "Enter edges in following format: \nNode1 Node2 (Weight)" :
                                                                                 "Enter arcs in following format: \nNode1 Node2 (Weight)"}
                                     defaultValue = {"1 2\n1 3\n1 4\n4 5"}
