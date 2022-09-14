@@ -4,15 +4,19 @@ import Canvas from './Canvas'
 
 function browserBasedLength() {
     let ua = navigator.userAgent
-    console.warn(ua)
-    if(ua.includes("Safari/") && !ua.includes("Chrome/") && !ua.includes("Chromium/"))
-        return "57"
-    if(ua.includes("Firefox/") && !ua.includes("Seamonkey/")) {
-        console.warn("firefox")
-        return "53"
+    if(ua.includes("Windows NT")) { 
+        if(ua.includes("Firefox/") && !ua.includes("Seamonkey/")) {
+            return "50"
+        }
+        return "55"
+    } else {
+        if(ua.includes("Safari/") && !ua.includes("Chrome/") && !ua.includes("Chromium/"))
+            return "57"
+        if(ua.includes("Firefox/") && !ua.includes("Seamonkey/")) {
+            return "53"
+        }
+        return "50"
     }
-    console.warn("default")
-    return "50"
 }
 
 function RandomRange(low, high) {
